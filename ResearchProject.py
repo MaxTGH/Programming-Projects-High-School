@@ -40,10 +40,9 @@ for i in range(4):
     hardnessCollectionSeries.append(dataCollection[i].loc[:,"Hardness (ppm)"]) #extracting the hardness data and putting it into a list 
     hardnessCollectionSeries[i].to_sql(name = "Hardness of Tank " + str(i+1), con = connection, if_exists = "replace", index = False,     #creating sql file for hardness data from each tank
                  dtype = {'Hardness':'real'})
+    hardnessCollectionList.append(hardnessCollectionSeries[i]["Hardness (ppm)"].tolist()) #changing the series to a list 
+    hardnessCollectionList[i].pop[0]
 
-    
-hardnessCollectionList.append(hardnessCollectionSeries[i]["Hardness (ppm)"].tolist()) #changing the series to a list 
-hardnessCollectionList.pop[0]
 percents = []
 #analyze the data
 for i in range(4):
@@ -52,13 +51,15 @@ for i in range(4):
     difference = m.abs(start-end)
     percentChange = difference / start
     percents.append(percentChange)
-    std = np.std(hardnessCollectionList)
-    n = len(hardnessCollectionList)
+    std = np.std(hardnessCollectionList[i])
+    n = len(hardnessCollectionList[i])
+    mean = (np.sum(hardnessCollectionList[i])) / n
     print("Tank " + str(i+1) + "\n" + "Difference: " + str(difference) + "\n" + "Percent Change: " + 
-          str(percentChange) + "\n" + "Standard deviation: " + std + "\n" + "Number of Values: ")
+          str(percentChange) + "\n" + "Standard deviation: " + str(std) + "\n" + "Number of Values: " + 
+          str(n) + "\n" + "Mean: " + str(mean))
 #printing values from analyzing data
 string = ""
-for i in range(4):
+for i in range(4): 
     if (int(percentChange[i]) > 0.5):
         string += str(i + 1) + " "
 print("Tanks " + string + " had their hardness levels decrease by half.")  

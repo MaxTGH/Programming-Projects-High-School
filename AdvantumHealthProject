@@ -1,10 +1,25 @@
 from square.client import Client
 import sqlite3
 from sqlite3 import Error
+import pandas as pd
+
+#Taking code from Excel to Pandas Dataframe
+print("\nConverting Excel to Dataframe")
+
+customers = pd.read_excel(
+    '/Users/maxni/Book 1.xlsx', #Name of the file and path
+    sheet_name='Customers',                    #Name of the spreadsheet 
+    header=0)                                  #1st row is column headers
+print(customers)
+
+print("\nInserting the Pandas Dataframe values into SQLITE")
+connection = sqlite3.connect('/Users/maxni/sqlite/Atest.db')
+customers.to_sql(name = "customers", con = connection, if_exists = "replace", index = False, 
+                 dtype = {'Name':'text', 'Email': 'text', 'Age':'real', 'Birthday':'text'})
 
 try:
         client = Client(
-        access_token='EAAAEGFw0C8A9NqyXNl2kHv0GwTr1UW57AraQdI6Oi6L1X7aRpI_yfJ9p6QbSe-1,
+        access_token='EAAAEGFw0C8A9NqyXNl2kHv0GwTr1UW57AraQdI6Oi6L1X7aRpI_yfJ9p6QbSe-1',
         environment='sandbox')
 except  Exception as err:
         print('error while connecting' + err)
