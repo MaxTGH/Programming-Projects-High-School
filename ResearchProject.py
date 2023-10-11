@@ -37,36 +37,28 @@ for i in range(4):
                  dtype = {'Temperature (°C)':'real', 'Salinity (ppt)': 'real','DO (mg/L)':'real', 'pH':'real',      #creating sql file for the data from each tank
                           'SPC (μS/cm)':'real', 'Iron (ppm)':'real','Copper (ppm)':'real','Nitrate (ppm)':'real',
                           'Nitrite (ppm)':'real','Hardness (ppm)':'real'}) 
-    hardnessCollectionSeries.append[dataCollection[i].loc[:,"Hardness (ppm)"]] #extracting the hardness data and putting it into a list 
+    hardnessCollectionSeries.append(dataCollection[i].loc[:,"Hardness (ppm)"]) #extracting the hardness data and putting it into a list 
     hardnessCollectionSeries[i].to_sql(name = "Hardness of Tank " + str(i+1), con = connection, if_exists = "replace", index = False,     #creating sql file for hardness data from each tank
                  dtype = {'Hardness':'real'})
 
     
-hardnessCollectionList.append[hardnessCollectionSeries[i]["Hardness (ppm)"].tolist()] #changing the series to a list 
+hardnessCollectionList.append(hardnessCollectionSeries[i]["Hardness (ppm)"].tolist()) #changing the series to a list 
 hardnessCollectionList.pop[0]
-testValues = []
-#complete a paired t-test for each set of data
+percents = []
+#analyze the data
 for i in range(4):
     start = hardnessCollectionList[i][0]
     end = hardnessCollectionList[i][-1]
+    difference = m.abs(start-end)
+    percentChange = difference / start
+    percents.append(percentChange)
     std = np.std(hardnessCollectionList)
     n = len(hardnessCollectionList)
-    t = (start - end) / (std * m.sqrt(n))
-    testValues.append(t)                 #Append t-test values to the list
-
-print(testValues)
-
-#compare value from test to critical value and see if it is significantly different
+    print("Tank " + str(i+1) + "\n" + "Difference: " + str(difference) + "\n" + "Percent Change: " + 
+          str(percentChange) + "\n" + "Standard deviation: " + std + "\n" + "Number of Values: ")
+#printing values from analyzing data
+string = ""
 for i in range(4):
-    string = "Tank " + str(i+1)
-    if testValues[i] < 1.7207:               #critical Value
-        string += " True"
-    else:
-        string += " False"
-    print(string + "\n")
-        
-
-
-
-
-
+    if (int(percentChange[i]) > 0.5):
+        string += str(i + 1) + " "
+print("Tanks " + string + " had their hardness levels decrease by half.")  
